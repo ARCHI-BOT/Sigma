@@ -1282,7 +1282,7 @@ bot.onText(/\/updatenow/, async (msg) => {
         return bot.sendMessage(ChatId, '❌ Restricted Feature: Just Owner');
     }
 
-   const Proses = bot.sendMessage(ChatId, '🔄 Checking for update...');
+   const Proses = await bot.sendMessage(ChatId, '🔄 Checking for update...');
 
     try { 
         const { data: remoteContent } = await axios.get(CONFIG.GITHUB_URL);
