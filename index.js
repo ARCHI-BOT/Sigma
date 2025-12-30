@@ -1282,7 +1282,7 @@ bot.onText(/\/updatenow/, async (msg) => {
         return bot.sendMessage(ChatId, '❌ Restricted Feature: Just Owner');
     }
 
-    bot.sendMessage(ChatId, '🔄 Checking for update...');
+   const Proses = bot.sendMessage(ChatId, '🔄 Checking for update...');
 
     try { 
         const { data: remoteContent } = await axios.get(CONFIG.GITHUB_URL);
@@ -1293,24 +1293,17 @@ bot.onText(/\/updatenow/, async (msg) => {
         const localContent = fs.readFileSync(CONFIG.SELF_PATH, 'utf8');
 
         if (remoteContent !== localContent) {
-            console.log('📦 New update found!');
+            bot.editMessageText('📦 New update found!',  { chat_id: chatId, message_id: Proses.message_id );
 
             fs.writeFileSync(`${CONFIG.SELF_PATH}.backup`, localContent);
 
             fs.writeFileSync(CONFIG.SELF_PATH, remoteContent, 'utf8');
 
-            await bot.sendMessage(ChatId, "✅ Update Completed!\nBot will restart in 1 second...");
-
-            const { spawn } = require('child_process');
+            await bot.sendMessage(ChatId, "✅ Update Completed!\nPlease Restart Script After 3 Sec...");
 
 setTimeout(() => {
-    const child = spawn('node', [CONFIG.SELF_PATH], {
-        detached: true,
-        stdio: 'ignore'
-    });
-    child.unref();
-    process.exit(0);
-}, 1000);
+    process.exit(1);
+}, 3000);
         } else {
             bot.sendMessage(ChatId, '✅ Your bot is already using the latest version.');
         }
