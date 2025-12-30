@@ -1305,7 +1305,8 @@ setTimeout(() => {
     process.exit(1);
 }, 3000);
         } else {
-            bot.sendMessage(ChatId, '✅ Your bot is already using the latest version.');
+        bot.editMessageText( '✅ Your bot is already using the latest version.',  { chat_id: chatId, message_id: Proses.message_id );
+        
         }
     } catch (error) {
         bot.sendMessage(ChatId, '❌ Update failed: ' + error.message);
