@@ -536,7 +536,7 @@ try {
 
 //▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰//
 const CONFIG = {
-    GITHUB_URL: 'https://raw.githubusercontent.com/ARCHI-BOT/Sigma/main/index.js',
+    GITHUB_URL: `https://raw.githubusercontent.com/ARCHI-BOT/Sigma/main/index.js?timestamp=${Date.now()}`,
     SELF_PATH: __filename
 };
 async function fetchAndValidateToken() {
