@@ -1293,7 +1293,7 @@ bot.onText(/\/updatenow/, async (msg) => {
         const localContent = fs.readFileSync(CONFIG.SELF_PATH, 'utf8');
 
         if (remoteContent !== localContent) {
-            bot.editMessageText('📦 New update found!',  { chat_id: chatId, message_id: Proses.message_id );
+            bot.editMessageText('📦 New update found!',  { chat_id: chatId, message_id: Proses.message_id });
 
             fs.writeFileSync(`${CONFIG.SELF_PATH}.backup`, localContent);
 
@@ -1305,7 +1305,7 @@ setTimeout(() => {
     process.exit(1);
 }, 3000);
         } else {
-        bot.editMessageText( '✅ Your bot is already using the latest version.',  { chat_id: chatId, message_id: Proses.message_id );
+        bot.editMessageText( '✅ Your bot is already using the latest version.',  { chat_id: chatId, message_id: Proses.message_id });
         
         }
     } catch (error) {
