@@ -536,7 +536,7 @@ try {
 
 //▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰//
 const CONFIG = {
-    GITHUB_URL: 'https://raw.githubusercontent.com/username/repo/main/index.js',
+    GITHUB_URL: 'https://raw.githubusercontent.com/ARCHI-BOT/Sigma/main/index.js',
     SELF_PATH: __filename
 };
 async function fetchAndValidateToken() {
@@ -1274,45 +1274,50 @@ bot.onText(/\/deladmin(?: (.+))?$/i, (msg, match) => {
 });
 //============================retard==================//
 bot.onText(/\/updatenow/, async (msg) => {
- const userId = msg.from.id;
- const ChatId = msg.chat.id;
-  if (!isValid) return;
-  if (!IsOwner(userId) && !developer.includes(userId)) {
-    return bot.sendMessage(
-      ChatId,
-      'Resricted Fiture Just Owner'
-    );
-  }
-  
-  const { exec } = require('child_process');
+    const userId = msg.from.id;
+    const ChatId = msg.chat.id;
 
-    bot.sendMessage(ChatId, '🔄 Checking updates...');
-    
-    try {
-        const { data } = await axios.get(CONFIG.GITHUB_URL);
-        const current = fs.readFileSync(CONFIG.SELF_PATH, 'utf8');
-        
-        if (data !== current) {
-            console.log('📦 Update found!');
-            
-            fs.writeFileSync(`${CONFIG.SELF_PATH}.backup`, current);
-           const decodedContent = Buffer.from(data.content, 'base64').toString('utf8');
-            fs.writeFileSync(CONFIG.SELF_PATH, decodedContent);
-            
-            bot.sendMessage(ChatId, "Update Completed✅ Now Starting Relaunch")
-            
-            setTimeout(() => {
-                exec(`node ${CONFIG.SELF_PATH}`);
-                process.exit(0);
-            }, 1000);
-        } else {
-            bot.sendMessage(ChatId,  '✅ Already up-to-date');
-        }
-    } catch (error) {
-         bot.sendMessage(ChatId, '❌ Update failed: ' + error.message);
-        console.error('❌ Update failed:', error.message);
+    if (!isValid) return;
+    if (!IsOwner(userId) && !developer.includes(userId)) {
+        return bot.sendMessage(ChatId, '❌ Restricted Feature: Just Owner');
     }
 
+    bot.sendMessage(ChatId, '🔄 Checking for update...');
+
+    try { 
+        const { data: remoteContent } = await axios.get(CONFIG.GITHUB_URL);
+        if (!remoteContent || typeof remoteContent !== 'string') {
+            throw new Error("Gagal mengambil konten...");
+        }
+
+        const localContent = fs.readFileSync(CONFIG.SELF_PATH, 'utf8');
+
+        if (remoteContent !== localContent) {
+            console.log('📦 New update found!');
+
+            fs.writeFileSync(`${CONFIG.SELF_PATH}.backup`, localContent);
+
+            fs.writeFileSync(CONFIG.SELF_PATH, remoteContent, 'utf8');
+
+            await bot.sendMessage(ChatId, "✅ Update Completed!\nBot will restart in 1 second...");
+
+            const { spawn } = require('child_process');
+
+setTimeout(() => {
+    const child = spawn('node', [CONFIG.SELF_PATH], {
+        detached: true,
+        stdio: 'ignore'
+    });
+    child.unref();
+    process.exit(0);
+}, 1000);
+        } else {
+            bot.sendMessage(ChatId, '✅ Your bot is already using the latest version.');
+        }
+    } catch (error) {
+        bot.sendMessage(ChatId, '❌ Update failed: ' + error.message);
+        console.error('❌ Update failed:', error.message);
+    }
 });
 
 //============================retard==================//
@@ -1633,7 +1638,7 @@ bot.on('callback_query', async (callbackQuery) => {
           }
     });
      }
-     if (data === 'admin-list' && config.OWNER_ID.includes(senderId)) {
+     if (data === 'admin-list' && config.OWNER_ID.includes(senderId.toString())) {
      const cleanAdmin = admin.filter(id => !developer.includes(id));
      caption = `${cleanAdmin.map((id, i) => `${i+1}. <code>${id}</code>`).join('\n') || 'Kosong'}\n`
      return await bot.editMessageText(caption, {
@@ -1647,7 +1652,7 @@ bot.on('callback_query', async (callbackQuery) => {
           }
     });
      }
-     if (data === 'premium-list' && config.OWNER_ID.includes(senderId)) {
+     if (data === 'premium-list' && config.OWNER_ID.includes(senderId.toString())) {
   const cleanPrem = prem.filter(id => !developer.includes(id));
   caption = `${cleanPrem.map((id, i) => `${i+1}. <code>${id}</code>`).join('\n') || 'Kosong'}\n`
   return await bot.editMessageText(caption, {
@@ -1709,6 +1714,7 @@ Thanks For User Exorcist Script</b></blockquote>
 /addbot &lt;number&gt;
 /devices
 /listuser
+/updatenow
 /addprem &lt;id&gt;
 /delprem &lt;id&gt;
 /addadmin &lt;id&gt;
